@@ -280,6 +280,9 @@ importers:
       '@elizaos/plugin-open-weather':
         specifier: workspace:*
         version: link:../packages/plugin-open-weather
+      '@elizaos/plugin-priming':
+        specifier: workspace:*
+        version: link:../packages/plugin-priming
       '@elizaos/plugin-primus':
         specifier: workspace:*
         version: link:../packages/plugin-primus
@@ -2354,6 +2357,18 @@ importers:
       zod:
         specifier: ^3.22.4
         version: 3.23.8
+
+  packages/plugin-priming:
+    dependencies:
+      '@elizaos/core':
+        specifier: workspace:*
+        version: link:../core
+      tsup:
+        specifier: 8.3.5
+        version: 8.3.5(@swc/core@1.10.7(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.3)(yaml@2.7.0)
+      whatwg-url:
+        specifier: 7.1.0
+        version: 7.1.0
 
   packages/plugin-primus:
     dependencies:
@@ -16141,6 +16156,7 @@ packages:
 
   lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
   lodash.isfunction@3.0.9:
     resolution: {integrity: sha512-AirXNj15uRIMMPihnkInB4i3NHeb4iBtNg9WRWuK2o31S+ePwwNmDPaTL3o7dTJ+VXNZim7rFs4rxN4YU1oUJw==}
@@ -39605,7 +39621,7 @@ snapshots:
 
   extract-zip@2.0.1:
     dependencies:
-      debug: 4.3.4
+      debug: 4.4.0(supports-color@5.5.0)
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
