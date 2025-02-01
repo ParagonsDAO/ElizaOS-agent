@@ -192,4 +192,23 @@ CREATE INDEX idx_knowledge_created ON knowledge("agentId", "createdAt");
 CREATE INDEX idx_knowledge_shared ON knowledge("isShared");
 CREATE INDEX idx_knowledge_embedding ON knowledge USING ivfflat (embedding vector_cosine_ops);
 
+CREATE OR REPLACE FUNCTION public.create_room(roomid UUID)
+RETURNS void AS $$
+BEGIN
+    INSERT INTO rooms(id, "createdAt")
+    VALUES (roomid, NOW());
+
+    INSERT INTO participants(id, "createdAt", "userId", "roomId")
+    VALUES (
+        gen_random_uuid(),
+        NOW(),
+        '00000000-0000-0000-0000-000000000000',
+        roomid
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+ALTER FUNCTION create_room(UUID) OWNER TO postgres;
+GRANT EXECUTE ON FUNCTION create_room(UUID) TO authenticated;
+
 COMMIT;
