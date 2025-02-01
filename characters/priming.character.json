@@ -6,7 +6,7 @@
   "clients": [
     "discord"
   ],
-  "modelProvider": "deepseek",
+  "modelProvider": "anthropic",
   "settings": {
     "secrets": {},
     "ragKnowledge": true,
