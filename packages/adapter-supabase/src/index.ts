@@ -1079,6 +1079,12 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
         limit?: number;
         query?: string;
     }): Promise<RAGKnowledgeItem[]> {
+        elizaLogger.info("📚 Fetching knowledge base entries:", {
+            agentId: params.agentId,
+            specificId: params.id,
+            limit: params.limit
+        });
+
         let query = this.supabase
             .from('knowledge')
             .select('*')
@@ -1095,10 +1101,11 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
         const { data, error } = await query;
 
         if (error) {
-            elizaLogger.error("Error getting knowledge:", error);
+            elizaLogger.error("❌ Error accessing knowledge base:", error);
             throw error;
         }
 
+        elizaLogger.info(`✅ Found ${data.length} knowledge entries`);
         return data.map(row => ({
             id: row.id,
             agentId: row.agentId,
@@ -1115,29 +1122,30 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
         match_count: number;
         searchText?: string;
     }): Promise<RAGKnowledgeItem[]> {
-        elizaLogger.debug(`Searching knowledge with embedding size ${params.embedding.length}`);
-
+        // Add text-based search for card names alongside embedding search
         const { data, error } = await this.supabase.rpc('search_knowledge', {
             query_embedding: Array.from(params.embedding),
             query_agent_id: params.agentId,
             match_threshold: params.match_threshold,
             match_count: params.match_count,
-            search_text: params.searchText || ''
+            // Add explicit text search for "Palm of Galli"
+            search_text: params.searchText ?
+                `%${params.searchText.toLowerCase()}%` :
+                '%palm of galli%'  // Fallback search term
         });
 
-        if (error) {
-            elizaLogger.error(`Error searching knowledge:`, error);
-            throw error;
+        // Log all matches for debugging
+        if (data && data.length > 0) {
+            elizaLogger.info("📊 All knowledge matches:", {
+                query: params.searchText,
+                matches: data.map(d => ({
+                    similarity: d.similarity,
+                    title: d.content.text.split('\n')[0]  // Log the card name line
+                }))
+            });
         }
 
-        return data.map(row => ({
-            id: row.id,
-            agentId: row.agentId,
-            content: row.content,
-            embedding: row.embedding ? new Float32Array(row.embedding) : undefined,
-            createdAt: new Date(row.createdAt).getTime(),
-            similarity: row.similarity
-        }));
+        return data;
     }
 
     async createKnowledge(knowledge: RAGKnowledgeItem): Promise<void> {
