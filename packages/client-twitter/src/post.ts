@@ -27,6 +27,8 @@ import {
 } from "discord.js";
 import { State } from "@elizaos/core";
 import { ActionResponse } from "@elizaos/core";
+import fs from 'fs';
+import path from 'path';
 
 const MAX_TIMELINES_TO_FETCH = 15;
 
@@ -454,6 +456,36 @@ export class TwitterPostClient {
         }
     }
 
+    private async logDryRun(type: 'post' | 'reply', content: string, context?: string) {
+        const timestamp = new Date().toISOString();
+        const logEntry = `[${timestamp}] ${type.toUpperCase()}\n${content}\n${context ? `\nContext:\n${context}\n` : ''}\n${'='.repeat(80)}\n`;
+
+        try {
+            const projectRoot = process.env.PROJECT_ROOT || path.resolve(process.cwd());
+            const logDir = path.join(projectRoot, 'data', 'logs');
+
+            elizaLogger.info(`Attempting to write to log directory: ${logDir}`);
+
+            if (!fs.existsSync(logDir)) {
+                elizaLogger.info(`Creating log directory: ${logDir}`);
+                fs.mkdirSync(logDir, { recursive: true });
+            }
+
+            const logPath = path.join(logDir, `twitter_dry_run_${this.twitterUsername}.log`);
+            elizaLogger.info(`Writing to log file: ${logPath}`);
+
+            fs.appendFileSync(logPath, logEntry);
+            elizaLogger.info(`Successfully wrote to log file`);
+        } catch (error) {
+            elizaLogger.error('Failed to write dry run log:', error);
+            elizaLogger.error('Error details:', {
+                cwd: process.cwd(),
+                username: this.twitterUsername,
+                error: error.message
+            });
+        }
+    }
+
     /**
      * Generates and posts a new tweet. If isDryRun is true, only logs what would have been posted.
      */
@@ -554,9 +586,8 @@ export class TwitterPostClient {
             cleanedContent = removeQuotes(fixNewLines(cleanedContent));
 
             if (this.isDryRun) {
-                elizaLogger.info(
-                    `Dry run: would have posted tweet: ${cleanedContent}`
-                );
+                elizaLogger.info(`Dry run: would have posted tweet: ${cleanedContent}`);
+                await this.logDryRun('post', cleanedContent);
                 return;
             }
 
@@ -1152,9 +1183,9 @@ export class TwitterPostClient {
             }
 
             if (this.isDryRun) {
-                elizaLogger.info(
-                    `Dry run: reply to tweet ${tweet.id} would have been: ${replyText}`
-                );
+                elizaLogger.info(`Dry run: reply to tweet ${tweet.id} would have been: ${replyText}`);
+                await this.logDryRun('reply', replyText,
+                    `Tweet ID: ${tweet.id}\nFrom: @${tweet.username}\nContent: ${tweet.text}`);
                 executedActions.push("reply (dry run)");
                 return;
             }

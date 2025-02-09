@@ -34,7 +34,7 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
         this.tableName = opts.tableName;
     }
 
-    private readonly defaultRAGMatchThreshold = 0.85;
+    private readonly defaultRAGMatchThreshold = 0.5;
     private readonly defaultRAGMatchCount = 5;
 
     /**

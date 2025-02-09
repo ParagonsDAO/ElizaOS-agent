@@ -4,10 +4,9 @@
 
   ],
   "clients": [
-    "discord",
-    "twitter"
+    "discord"
   ],
-  "modelProvider": "deepseek",
+  "modelProvider": "anthropic",
   "settings": {
     "secrets": {},
     "ragKnowledge": true,
@@ -34,6 +33,24 @@
     "writes academic papers about Parallel economy, cites twitch chat as primary sources"
   ],
   "knowledge": [
+    {
+        "path": "shared/colony_whitepaper.md",
+        "shared": false
+    },
+    {
+        "path": "shared/wayfinder_whitepaper_part1.md",
+        "shared": false
+    },
+    {
+        "path": "shared/wayfinder_whitepaper_part2.md",
+        "shared": false
+    },
+    {
+        "path": "shared/wayfinder_whitepaper_part3.md",
+        "shared": false
+    },
+    "Parallel TCG",
+    "Web3 gaming"
   ],
   "messageExamples": [
     [

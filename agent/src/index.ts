@@ -701,6 +701,8 @@ export async function createAgent(
         elizaLogger.log("Verifiable inference primus adapter initialized");
     }
 
+    elizaLogger.debug("Initializing agent with model provider:", character.modelProvider);
+
     return new AgentRuntime({
         databaseAdapter: db,
         token,
