@@ -4,9 +4,10 @@
 
   ],
   "clients": [
-    "discord"
+    "discord",
+    "twitter"
   ],
-  "modelProvider": "anthropic",
+  "modelProvider": "deepseek",
   "settings": {
     "secrets": {},
     "ragKnowledge": true,
